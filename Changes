@@ -1,0 +1,6 @@
+Revision history for Perl extension autorequire.
+
+0.01  Sat Sep 10 16:32:28 2005
+	- original version; created by h2xs 1.23 with options
+		-AX -b 5.8.0 -n autorequire autorequire
+
