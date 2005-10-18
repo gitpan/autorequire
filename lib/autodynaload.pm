@@ -9,7 +9,7 @@ use Config ;
 use ExtUtils::Installed ;
 
 
-our $VERSION = '0.04' ;
+our $VERSION = '0.05' ;
 
 @autodynaload::INC = () ;
 autodynaload->new($autodynaload::dl_findfile)->insert(-1) ;
@@ -52,7 +52,14 @@ sub _dl_findfile {
 	my @ret = () ;
 	foreach my $ar (@autodynaload::INC){
 		next if $ar->{disabled} ;
+
 		my $s = $ar->_get_sub() ;
+		if (! ref($s)){
+			# Symbolic reference. It may not be defined yet.
+			return undef if !defined(&{$s}) ;
+			$s = \&{$s} ;
+		}
+
 		unshift @args, $ar unless $s eq $autodynaload::dl_findfile ;
 
 		local $autodynaload::disable_expandspec = 0 ;
@@ -141,7 +148,7 @@ autodynaload - Dynamically locate shared objects on your system
 =head1 DESCRIPTION
 
 C<autodynaload> allows you to specify the location of a shared object at
-runtime. It does so by overridding the proper L<DynaLoader> methods and
+runtime. It does so by overriding the proper L<DynaLoader> methods and
 allowing for handlers to be registered.
 
 The subroutine argument can be either a coderef or scalar value, in which
@@ -169,7 +176,7 @@ to be of any use you must place the object in the proper array (in this case the
 
 =head1 METHODS
 
-C<autodynaload> extends L<autorequire>. See L<autorequire> for methods not 
+Note: C<autodynaload> extends L<autorequire>. See L<autorequire> for methods not 
 documented here.
 
 =over 4

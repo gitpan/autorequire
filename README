@@ -1,14 +1,14 @@
-autorequire version 0.04
+autorequire version 0.05
 ========================
 
-autodynaload - Dynamically locate shared objects on your system
+autorequire - Generate module code on demand
 
 Example:
 
-  use autodynaload sub {
+  use autorequire sub {
     my ($this, $f) = @_ ;
-    if ($f eq 'some_object'){
-      return "/path/to/some_object.so" ;
+    if ($f eq 'Useless.pm'){
+      return "package Useless ;\n1 ;"
     }
     return undef ;
   } ;

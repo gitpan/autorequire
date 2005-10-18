@@ -11,3 +11,6 @@ Revision history for Perl extension autorequire.
 0.03
     - fixed numeroud bugs and added autodynaload.pm
 
+0.05 Tue Oct 18 07:52:42 EDT 2005
+    - updated documentation
+

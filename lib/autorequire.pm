@@ -7,7 +7,7 @@ use File::Spec ;
 use IO::File ;
 
 
-our $VERSION = '0.04' ;
+our $VERSION = '0.05' ;
 
 
 sub import {
@@ -220,7 +220,7 @@ autorequire - Generate module code on demand
 
 C<autorequire> allows you to automatically generate code for modules that are
 missing from your installation. It does so by placing a handler at the end of
-the @INC array and forwarding requests to missing modules to the subroutine 
+the @INC array and forwarding requests for missing modules to the subroutine 
 provided.
 
 The subroutine argument can be either a coderef or scalar value, in which 
@@ -266,12 +266,12 @@ in the @INC array by calling $ar->insert() repeatedly.
 
 Convenience method that removes every occurence of $ar from the @INC array.
 
--item $ar->disable ()
+=item $ar->disable ()
 
 Disables $ar, effectively causing it to be skipped over when the INC array
 is processed.
 
--item $ar->enabled ()
+=item $ar->enabled ()
 
 Enabled $ar, effectively causing it to be considered when the INC array
 is processed.
