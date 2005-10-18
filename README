@@ -1,16 +1,18 @@
-autorequire version 0.01
+autorequire version 0.04
 ========================
 
-The README is used to introduce the module and provide instructions on
-how to install the module, any machine dependencies it may have (for
-example C compilers and installed libraries) and any other information
-that should be provided before the module is installed.
+autodynaload - Dynamically locate shared objects on your system
 
-A README file is required for CPAN modules since CPAN extracts the
-README file from a module distribution so that people browsing the
-archive can use it get an idea of the modules uses. It is usually a
-good idea to provide version information here so that people can
-decide whether fixes for the module are worth downloading.
+Example:
+
+  use autodynaload sub {
+    my ($this, $f) = @_ ;
+    if ($f eq 'some_object'){
+      return "/path/to/some_object.so" ;
+    }
+    return undef ;
+  } ;
+
 
 INSTALLATION
 
@@ -21,15 +23,15 @@ To install this module type the following:
    make test
    make install
 
+
 DEPENDENCIES
 
 This module requires these other modules and libraries:
 
-  blah blah blah
+  - perl 5.8 or better
+
 
 COPYRIGHT AND LICENCE
-
-Put the correct copyright and licence information here.
 
 Copyright (C) 2005 by Patrick LeBoutillier
 
