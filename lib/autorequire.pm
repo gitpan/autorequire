@@ -1,13 +1,12 @@
 package autorequire ;
 
-use 5.008 ;
 use strict ;
 use Carp ;
 use File::Spec ;
 use IO::File ;
 
 
-our $VERSION = '0.05' ;
+our $VERSION = '0.06' ;
 
 
 sub import {
@@ -158,7 +157,7 @@ sub is_installed {
 	my %opts = @_ ;
 
 	my $file = undef ;
-	if ((File::Spec->file_name_is_absolute($filename))||($filename !~ /\.pm$/)){
+	if (File::Spec->file_name_is_absolute($filename)){
 		$file = $filename ;
 	}
 	else {

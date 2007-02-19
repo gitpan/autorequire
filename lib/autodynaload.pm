@@ -5,11 +5,13 @@ use strict ;
 use autorequire ;
 use Carp ;
 use DynaLoader ;
+use XSLoader ;
 use Config ;
 use ExtUtils::Installed ;
+use File::Spec ;
 
 
-our $VERSION = '0.05' ;
+our $VERSION = '0.06' ;
 
 @autodynaload::INC = () ;
 autodynaload->new($autodynaload::dl_findfile)->insert(-1) ;
@@ -105,16 +107,39 @@ sub is_installed {
 	$installed = new ExtUtils::Installed() unless $installed ;
 
     my $file = undef ;
-	foreach my $module ($installed->modules()){
-		foreach my $test ($installed->files($module)){
-			if ($test =~ /$filename\.$dlext$/){
-				$file = $test ;
-				last ;
+	if (File::Spec->file_name_is_absolute($filename)){
+		$file = "$filename.$dlext" ;
+	}
+    else {
+		foreach my $module ($installed->modules()){
+			foreach my $test ($installed->files($module)){
+				if ($test =~ /$filename\.$dlext$/){
+					$file = $test ;
+					last ;
+				}
 			}
 		}
 	}
 	
     return $class->_name_or_open_or_slurp_file($file, %opts) ;
+}
+
+
+sub get_unresolved_deps {
+	my $class = shift ;
+	my $so = shift ;
+
+	open(LDD, "/usr/bin/ldd $so |") or
+		croak("Can't execute /usr/bin/ldd: $!") ;
+	my @ret = () ;
+	while (<LDD>){
+		my $dep = $_ ;
+		if ($dep =~ /^\s*(.*?)  => not found/){
+			push @ret, $dep ;
+		}
+	}
+	
+	return @ret ;
 }
 
 
@@ -125,6 +150,8 @@ BEGIN {
     *{'DynaLoader::dl_expandspec'}  = \&autodynaload::_dl_expandspec ;
 	*{'DynaLoader::bootstrap'} = \&autodynaload::_bootstrap ;
 	*{'DynaLoader::dl_findfile'} = \&autodynaload::_dl_findfile ;
+	# Force XSLoader to use DynaLoader
+	*{'XSLoader::load'} = \&XSLoader::bootstrap_inherit ;
 }
 
 
@@ -156,8 +183,8 @@ case it will be used as a symbolic reference. Note: no error will be generated
 if the symbolic reference does not resolve. This allows a handler to "kick in"
 at later time when the subroutine in question is actually defined.
 
-The subroutine must return absolute path to the shared object. A return value 
-of undef will pass control to the next handler (either a previous 
+The subroutine must return the absolute path to the shared object. A return 
+value of undef will pass control to the next handler (either a previous 
 C<autodynaload> handler or L<DynaLoader>'s default mechanism).
 
 
