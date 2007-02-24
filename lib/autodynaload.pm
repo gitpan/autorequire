@@ -11,7 +11,7 @@ use ExtUtils::Installed ;
 use File::Spec ;
 
 
-our $VERSION = '0.06' ;
+our $VERSION = '0.07' ;
 
 @autodynaload::INC = () ;
 autodynaload->new($autodynaload::dl_findfile)->insert(-1) ;
@@ -45,6 +45,19 @@ sub _bootstrap {
 
 	local $DynaLoader::do_expand = 1 ;
 	$autodynaload::bootstrap->(@args) ;
+}
+
+
+# Stolen from XSLoader.pm
+sub _bootstrap_inherit {
+	package DynaLoader;
+
+	my $module = $_[0];
+	local *DynaLoader::isa = *{"$module\::ISA"};
+	local @DynaLoader::isa = (@DynaLoader::isa, 'DynaLoader');
+	# Cannot goto due to delocalization.  Will report errors on a wrong line?
+	require DynaLoader;
+	DynaLoader::bootstrap(@_);
 }
 
 
@@ -151,7 +164,7 @@ BEGIN {
 	*{'DynaLoader::bootstrap'} = \&autodynaload::_bootstrap ;
 	*{'DynaLoader::dl_findfile'} = \&autodynaload::_dl_findfile ;
 	# Force XSLoader to use DynaLoader
-	*{'XSLoader::load'} = \&XSLoader::bootstrap_inherit ;
+	*{'XSLoader::load'} = \&autodynaload::bootstrap_inherit ;
 }
 
 
